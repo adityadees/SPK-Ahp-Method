@@ -275,60 +275,17 @@
             </div>
             <div class="gallery-page-content gallery-hover">
                 <div class="row">
-                    <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
-                        <div class="item">
-                            <figure>
-                                <a href="<?= base_url()?>assets/frontend/images/gallery-grid-1.jpg" class="group-grid" data-fancybox="gallery">
-                                    <img src="<?= base_url()?>assets/frontend/images/gallery-grid-1.jpg" alt="">
-                                </a>
-                            </figure>
+                    <?php foreach($gallery as $akk) :?>
+                        <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
+                            <div class="item">
+                                <figure>
+                                    <a href="<?= base_url()?>assets/images/<?= $akk['filefoto']; ?>" class="group-grid" data-fancybox="gallery">
+                                        <img src="<?= base_url()?>assets/images/<?= $akk['filefoto']; ?>" alt="">
+                                    </a>
+                                </figure>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
-                        <div class="item">
-                            <figure>
-                                <a href="<?= base_url()?>assets/frontend/images/gallery-grid-2.jpg" class="group-grid" data-fancybox="gallery">
-                                    <img src="<?= base_url()?>assets/frontend/images/gallery-grid-2.jpg" alt="">
-                                </a>
-                            </figure>
-                        </div>
-                    </div>
-                    <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
-                        <div class="item">
-                            <figure>
-                                <a href="<?= base_url()?>assets/frontend/images/gallery-grid-3.jpg" class="group-grid" data-fancybox="gallery">
-                                    <img src="<?= base_url()?>assets/frontend/images/gallery-grid-3.jpg" alt="">
-                                </a>
-                            </figure>
-                        </div>
-                    </div>
-                    <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
-                        <div class="item">
-                            <figure>
-                                <a href="<?= base_url()?>assets/frontend/images/gallery-grid-4.jpg" class="group-grid" data-fancybox="gallery">
-                                    <img src="<?= base_url()?>assets/frontend/images/gallery-grid-4.jpg" alt="">
-                                </a>
-                            </figure>
-                        </div>
-                    </div>
-                    <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
-                        <div class="item">
-                            <figure>
-                                <a href="<?= base_url()?>assets/frontend/images/gallery-grid-5.jpg" class="group-grid" data-fancybox="gallery">
-                                    <img src="<?= base_url()?>assets/frontend/images/gallery-grid-5.jpg" alt="">
-                                </a>
-                            </figure>
-                        </div>
-                    </div>
-                    <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
-                        <div class="item">
-                            <figure>
-                                <a href="<?= base_url()?>assets/frontend/images/gallery-grid-6.jpg" class="group-grid" data-fancybox="gallery">
-                                    <img src="<?= base_url()?>assets/frontend/images/gallery-grid-6.jpg" alt="">
-                                </a>
-                            </figure>
-                        </div>
-                    </div>
+                    <?php endforeach; ?>
                 </div>
             </div>
         </div>

@@ -7,6 +7,7 @@ class Home extends Admin {
 	{
 		parent::__construct();
         $this->load->model('Mymod');
+        $this->load->library('Pdf');
     }
 
     public function index()
@@ -324,10 +325,22 @@ class Home extends Admin {
 
         public function hasil_permanen()
         {
-            $this->data['hasil'] = $this->db->query("select kode_jalan, nama_jalan, nila_weigh from jalan order by nila_weigh");
+            $this->data['hasil'] = $this->db->query("select kode_jalan, nama_jalan, periode, nila_weigh from jalan order by nila_weigh");
             $this->data['title'] = 'Hasil';
             $this->data['output'] = $this->load->view('admin/hasil', $this->data, true);
             $this->load->view('layout', $this->data);
+        }
+
+
+        public function cetak()
+        {
+            $x['print']=$this->db->query("select kode_jalan, nama_jalan, nila_weigh from jalan order by nila_weigh");
+            $this->load->library('pdf');
+            $this->pdf->setPaper('A4', 'potrait');
+            $this->pdf->filename = "report.pdf";
+            $this->pdf->load_view('admin/cetak',$x);
+            $this->pdf->render();
+            $this->pdf->stream();
         }
 
 
@@ -346,10 +359,10 @@ class Home extends Admin {
             $InsertData=$this->Mymod->InsertData('pesan',$data);
             if($InsertData){
                 $this->session->set_flashdata('success', 'Berhasil menambah data ');
-                redirect();
+                redirect('home');
             } else {
                 $this->session->set_flashdata('success', 'Gagal menambah data ');
-                redirect();
+                redirect('home');
             }
         }
     }

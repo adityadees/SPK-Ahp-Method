@@ -20,10 +20,23 @@
                 <div class="row">
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                         <div class="contact-form">
+                            <p>
+                                <?php if($this->session->flashdata('success')){ ?>
+                                    <div class="alert alert-success">
+                                        <a href="#" class="close" data-dismiss="alert">&times;</a>
+                                        <strong>Sukses!</strong> <?php echo $this->session->flashdata('success'); ?>
+                                    </div>
+                                <?php } else if($this->session->flashdata('error')){?>
+                                    <div class="alert alert-warning">
+                                        <a href="#" class="close" data-dismiss="alert">&times;</a>
+                                        <strong>Error!</strong> <?php echo $this->session->flashdata('error'); ?>
+                                    </div>
+                                <?php }?>
+                            </p>
                             <h3 class="contact-title">
                                 Kritik & Saran
                             </h3>
-                            <form method="POST" action="" class="form-contact js-contact-form">
+                            <form method="POST" action="<?= base_url()?>frontendc/save_kritik" class="">
                                 <div class="form-input">
                                     <div class="row">
                                         <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
@@ -47,7 +60,7 @@
                                     <textarea name="comment" placeholder="Pesan*" required></textarea>
                                 </div>
                                 <div class="wrap-group">
-                                    <input type="submit" class="btn-submit" name="more" value="Submit">
+                                    <input type="submit" class="btn-submit"  value="Submit">
                                 </div>
                             </form>
                         </div>

@@ -14,37 +14,28 @@
         if($_SESSION['level']==='desa'){
             $this->data['title'] = 'Inbox';
             $this->data['output'] = 'InboxDesa';
-            $camat = $this->Mymod->ViewDataWhere('kecamatan',['user_id' => $_SESSION['user_id']])->row_array();
+            $whereD=[
+                'user_id'=>$_SESSION['user_id'],
+            ];
+            $g_desa = $this->Mymod->ViewDataWhere('desa',$whereD)->row_array();
 
-            if($_SESSION['level']==='camat'){
+            $whereCD=[
+                'kode_desa'=>$g_desa['kode_desa'],
+            ];
+            $pesan = $this->Mymod->ViewDataWhere('pesan',$whereCD)->result_array();
 
-                $table = [
-                    'desa' => 'kode_desa',
-                    'jalan' => 'kode_desa'
-                ];
-                $where=[
-                    'kode_kecamatan'=>$camat['kode_kecamatan'],
-                ];
-                $desa = $this->Mymod->getJoinWhere($table,$where)->result_array();
-                $this->data['qPenilaian'] = $desa;
-            } else if($_SESSION['level']==='desa'){
-
-
-                $whereD=[
-                    'user_id'=>$_SESSION['user_id'],
-                ];
-                $g_desa = $this->Mymod->ViewDataWhere('desa',$whereD)->row_array();
-
-                $whereCD=[
-                    'kode_desa'=>$g_desa['kode_desa'],
-                ];
-                $pesan = $this->Mymod->ViewDataWhere('pesan',$whereCD)->result_array();
-
-                $this->data['pesan'] = $pesan;
-            } else {}
+            $this->data['pesan'] = $pesan;
+            
+            $this->load->view('layout', $this->data);
+        } else if($_SESSION['level']==='admin'){
+            $this->data['title'] = 'InboxAdmin';
+            $this->data['output'] = 'InboxAdmin';
+            $pesan = $this->Mymod->ViewData('kritik');
+            $this->data['pesan'] = $pesan;
+            
             $this->load->view('layout', $this->data);
         } else {
-            redirect('/');
+            redirect('home');
         }
     }
 
@@ -56,6 +47,19 @@
 
         $where =[ 
             'pesan_id' => $pesan_id
+        ];
+        $this->Mymod->DeleteData($table,$where);
+        $this->session->set_flashdata('success', 'Berhasil menghapus data');
+        redirect('inbox');
+    }
+
+
+    public function del_pesan_adm(){
+        $kritik_id=$this->input->post('kritik_id');
+        $table='kritik';
+
+        $where =[ 
+            'kritik_id' => $kritik_id
         ];
         $this->Mymod->DeleteData($table,$where);
         $this->session->set_flashdata('success', 'Berhasil menghapus data');

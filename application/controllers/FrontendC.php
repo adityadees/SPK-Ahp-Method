@@ -8,9 +8,10 @@ class FrontendC extends CI_Controller{
 
 	public function Index(){
 		$y['title']='Home';
+		$x['gallery'] = $this->db->query("SELECT * FROM gallery limit 6")->result_array();
 		$this->load->view('frontend/layout/header',$y);
 		$this->load->view('frontend/layout/topbar');
-		$this->load->view('frontend/index');
+		$this->load->view('frontend/index',$x);
 		$this->load->view('frontend/layout/footer');
 	}
 
@@ -35,18 +36,21 @@ class FrontendC extends CI_Controller{
 
 	public function rekap(){
 		$y['title']='Rekap Pembangunan';
+		$x['print']=$this->db->query("select kode_jalan, nama_jalan, periode,nila_weigh from jalan order by nila_weigh")->result();
 		$this->load->view('frontend/layout/header',$y);
 		$this->load->view('frontend/layout/topbar');
-		$this->load->view('frontend/rekap');
+		$this->load->view('frontend/rekap',$x);
 		$this->load->view('frontend/layout/footer');
 	}
 
 
 	public function gallery(){
 		$y['title']='Gallery';
+
+		$x['gallery'] = $this->Mymod->ViewData('gallery');
 		$this->load->view('frontend/layout/header',$y);
 		$this->load->view('frontend/layout/topbar');
-		$this->load->view('frontend/gallery');
+		$this->load->view('frontend/gallery',$x);
 		$this->load->view('frontend/layout/footer');
 	}
 
@@ -67,4 +71,26 @@ class FrontendC extends CI_Controller{
 	}
 	
 
+	public function save_kritik(){
+		$kritik_nama = $this->input->post('name');
+		$kritik_email = $this->input->post('email');
+		$kritik_telepon = $this->input->post('tel');
+		$kritik_isi = $this->input->post('comment');
+
+		$data =[ 
+			'kritik_nama'=>$kritik_nama,
+			'kritik_email'=>$kritik_email,
+			'kritik_telepon'=>$kritik_telepon,
+			'kritik_isi'=>$kritik_isi,
+		];
+
+		$InsertData=$this->Mymod->InsertData('kritik',$data);
+		if($InsertData){
+			$this->session->set_flashdata('success', 'Berhasil mengirim pesan ');
+			redirect('kritik');
+		} else {
+			$this->session->set_flashdata('success', 'Gagal mengirim pesan ');
+			redirect('kritik');
+		}
+	}
 }

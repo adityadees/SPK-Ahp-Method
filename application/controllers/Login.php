@@ -15,8 +15,8 @@ class Login extends CI_Controller
 
 	public function index()
 	{
-			$this->data['title'] = 'LOGIN';
-			$this->load->view('login', $this->data);
+		$this->data['title'] = 'LOGIN';
+		$this->load->view('login', $this->data);
 	}
 
 	public function process()
@@ -42,7 +42,11 @@ class Login extends CI_Controller
 					'level'	   => $res->level
 				];
 				$this->session->set_userdata( $sess );
-				redirect('/');
+				if($_SESSION['level']=='pu'){
+				redirect('home/hasil_permanen');
+				} else {
+				redirect('home');
+				}
 			}else{
 				$this->session->set_flashdata('error', floating_message('error', 'Login salah!'));
 				redirect('login');

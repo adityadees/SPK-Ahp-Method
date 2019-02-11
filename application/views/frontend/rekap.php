@@ -21,10 +21,33 @@
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                         <div class="list-skills">
                             <h2 class="title">Rekap Pembangunan</h2>
-                            <p class="desc">Kementerian Pekerjaan Umum dan Perumahan Rakyat Republik Indonesia (disingkat Kemen PUPR RI) adalah kementerian dalam Pemerintah Indonesia yang membidangi urusan pekerjaan umum dan perumahan rakyat. Dahulu Kementerian Pekerjaan Umum dan Perumahan Rakyat bernama "Departemen Permukiman dan Pengembangan Wilayah" (1999-2000) dan "Departemen Permukiman dan Prasarana Wilayah" (2000-2004). Kementerian Pekerjaan Umum dan Perumahan Rakyat berada di bawah dan bertanggung jawab kepada Presiden. Kemenpupera dipimpin oleh seorang Menteri Pekerjaan Umum dan Perumahan Rakyat yang sejak tanggal 27 Oktober 2014 dijabat oleh Basuki Hadimuljono.</p>
-                        </div>
+                            <p class="desc">
+                                <table class="table table-bordered table-hovered">
+                                    <thead>
+                                        <tr>
+                                            <th>No</th>
+                                            <th>Kode Jalan</th>
+                                            <th>Nama Jalan</th>
+                                            <th>Periode</th>
+                                            <th>Nilai</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php $no=0; foreach($print as $kk ): $no++;?>
+                                        <tr>
+                                            <td><?= $no;?> </td>
+                                            <td><?= $kk->kode_jalan; ?></td>
+                                            <td><?= $kk->nama_jalan; ?></td>
+                                            <td><?= $kk->periode; ?></td>
+                                            <td><?= $kk->nila_weigh; ?></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </p>
                     </div>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+</section>

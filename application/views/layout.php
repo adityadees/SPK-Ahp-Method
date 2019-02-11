@@ -49,22 +49,28 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             <div class="menu_section">
               <h3>General</h3>
               <ul class="nav side-menu">
-                <li><a href="<?php echo base_url(); ?>"><i class="fa fa-home"></i> Doashboard</a></li>
+
 
                 <?php if($_SESSION['level']==='desa') {?>
-                  <li><a href="<?php echo base_url(); ?>jalan"><i class="fa fa-road"></i> Jalan</a></li>
-                  <li><a href="<?php echo base_url(); ?>inbox"><i class="fa fa-inbox"></i> Inbox</a></li>
+                  <li><a href="<?= base_url(); ?>home"><i class="fa fa-home"></i> Dashboard</a></li>
+                  <li><a href="<?= base_url(); ?>jalan"><i class="fa fa-road"></i> Jalan</a></li>
+                  <li><a href="<?= base_url(); ?>inbox"><i class="fa fa-inbox"></i> Inbox</a></li>
+                  <li><a href="<?= base_url(); ?>foto"><i class="fa fa-image"></i> Foto</a></li>
+                  <li><a href="<?= base_url(); ?>home/hasil_permanen"><i class="fa fa-home"></i>Hasil</a></li>
                 <?php } else if($_SESSION['level']==='camat'){?>
-                  <li><a href="<?php echo base_url(); ?>jalan"><i class="fa fa-road"></i> Crosscheck Data</a></li>
+                  <li><a href="<?= base_url(); ?>home"><i class="fa fa-home"></i> Dashboard</a></li>
+                  <li><a href="<?= base_url(); ?>jalan"><i class="fa fa-road"></i> Crosscheck Data</a></li>
+                  <li><a href="<?= base_url(); ?>home/hasil_permanen"><i class="fa fa-home"></i>Hasil</a></li>
                 <?php } else if($_SESSION['level']==='pu'){?>
-                  <li><a href="<?php echo base_url(); ?>home/hasil_permanen"><i class="fa fa-home"></i>Hasil</a></li>
-                  <li><a href="<?php echo base_url(); ?>"><i class="fa fa-home"></i> Cetak Laporan</a></li>
+                  <li><a href="<?= base_url(); ?>home/hasil_permanen"><i class="fa fa-print"></i>Hasil</a></li>
                 <?php } else { ?>
+                  <li><a href="<?= base_url(); ?>home"><i class="fa fa-home"></i> Dashboard</a></li>
                   <li><a href="<?= base_url(); ?>home/kriteria"><i class="fa fa-th-large"></i> Kriteria</a></li>
                   <li><a href="<?= base_url(); ?>home/kecamatan"><i class="fa fa-institution"></i> Kecamatan</a></li>
                   <li><a href="<?= base_url(); ?>home/desa"><i class="fa fa-building"></i> Desa</a></li>
                   <li><a href="<?= base_url(); ?>home/users"><i class="fa fa-user"></i> User</a></li>
-                  <li><a href="<?php echo base_url(); ?>home/set_kriteria">Set Hasil</a></li>
+                  <li><a href="<?= base_url(); ?>inbox"><i class="fa fa-inbox"></i> Inbox</a></li>
+                  <li><a href="<?= base_url(); ?>home/set_kriteria"><i class="fa fa-check"></i>Set Hasil</a></li>
                 <?php } ?>
 
     <!--             <li><a><i class="fa fa-table"></i> Master <span class="fa fa-chevron-down"></span></a>
@@ -129,7 +135,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                   <div class="x_title">
                     <h2><?php echo $title; ?></h2>
                     <ul class="nav navbar-right panel_toolbox">
-                      <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
+                      <?php
+                      if($title=='Hasil'){ if($_SESSION['level']=='pu'){?>
+                        <a href="<?= base_url()?>laporan" class="btn btn-primary">Print</a>
+                      <?php } else {} } else {
+                        ?>
+                        <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
+                      <?php } ?>
                     </ul>
                     <div class="clearfix"></div>
                   </div>
@@ -278,128 +290,273 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                             </div>
                           </div>
                         </div>
-                      <?php endforeach; ?>
-                    <?php } else {
-                      echo $output; 
-                    } ?>
+                      <?php endforeach; } else if($output==='InboxAdmin') {
+                        ?>
+                        <br>
+                        <table id="datatable" class="table table-striped table-bordered">
+                          <thead>
+                            <tr>
+                              <th>Nama</th>
+                              <th>Email</th>
+                              <th>Telepon</th>
+                              <th>Isi</th>
+                              <th>Tanggal</th>
+                              <th>Aksi</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <?php 
+                            foreach ($pesan as $ss) : 
+                              ?>
+                              <tr>
+                                <td><?= $ss['kritik_nama']; ?></td>
+                                <td><?= $ss['kritik_email']; ?></td>
+                                <td><?= $ss['kritik_telepon']; ?></td>
+                                <td><?= $ss['kritik_isi']; ?></td>
+                                <td><?= date('d-m-Y H:i:s',strtotime($ss['kritik_tanggal'])); ?></td>
+                                <td>
+                                  <a href="#" data-toggle="modal" data-target=".delPA<?= $ss['kritik_id']; ?>">
+                                    <i class="fa fa-trash"></i>
+                                  </a>
+                                </td>
+                              </tr> 
+                            <?php endforeach ?>
+                          </tbody>
+                        </table>
+
+
+                        <?php foreach($pesan as $i):?>
+                          <div class="modal fade bs-example-modal-lg delPA<?= $i['kritik_id']; ?>" tabindex="-1" role="dialog" aria-hidden="true">
+                            <div class="modal-dialog modal-md">
+                              <div class="modal-content">
+                                <div class="modal-header">
+                                  <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
+                                  <h4 class="modal-title" id="myModalLabel">Hapus Pesan</h4>
+                                </div>
+                                <form data-parsley-validate class="form-horizontal form-label-left" method="POST" action="<?= base_url();?>inbox/del_pesan_adm">
+                                  <div class="modal-body">
+                                    <div class="form-group">
+                                      <input type="hidden" name="kritik_id" value="<?= $i['kritik_id']; ?>">
+                                      <h4>Apakah anda yakin akan menghapus data ini?</h4>
+                                    </div>
+                                    <div class="modal-footer">
+                                      <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                                      <input type="submit" value="Ya" class="btn btn-primary">
+                                    </div>
+                                  </div>
+                                </form>
+                              </div>
+                            </div>
+                          </div>
+                        <?php endforeach; } else if($output==='FotoJalan'){   ?>
+
+                          <div class="row">
+                            <div class="col-md-12">
+                              <a href="<?= base_url();?>foto/add" class="btn btn-primary pull-right">Tambah Data</a>
+                            </div>
+                          </div>
+
+                          <div class="row">
+                            <?php foreach ($FJalan as $kf) : ?>
+                              <div class="col-md-55">
+                                <div class="thumbnail">
+                                  <div class="image view view-first">
+                                    <img style="width: 100%; display: block;" src="<?= base_url()?>assets/images/<?= $kf['filefoto']; ?>" alt="image" />
+                                    <div class="mask">
+                                      <p><?= $kf['gallery_judul']; ?></p>
+                                      <div class="tools tools-bottom">
+                                        <a href="#" data-toggle="modal" data-target=".del_ft<?= $kf['gallery_id']; ?>">
+                                          <i class="fa fa-trash"></i>
+                                        </a>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="caption">
+                                    <p><?= $kf['nama_jalan']; ?></p>
+                                  </div>
+                                </div>
+                              </div>
+                            <?php endforeach; ?>
+                          </div>
+
+                          <?php foreach($FJalan as $iag):?>
+                            <div class="modal fade bs-example-modal-lg del_ft<?= $iag['gallery_id']; ?>" tabindex="-1" role="dialog" aria-hidden="true">
+                              <div class="modal-dialog modal-md">
+                                <div class="modal-content">
+                                  <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
+                                    <h4 class="modal-title" id="myModalLabel">Hapus Pesan</h4>
+                                  </div>
+                                  <form data-parsley-validate class="form-horizontal form-label-left" method="POST" action="<?= base_url();?>foto/del_foto">
+                                    <div class="modal-body">
+                                      <div class="form-group">
+                                        <input type="hidden" name="gallery_id" value="<?= $iag['gallery_id']; ?>">
+                                        <h4>Apakah anda yakin akan menghapus data ini?</h4>
+                                      </div>
+                                      <div class="modal-footer">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                                        <input type="submit" value="Ya" class="btn btn-primary">
+                                      </div>
+                                    </div>
+                                  </form>
+                                </div>
+                              </div>
+                            </div>
+                          <?php endforeach; } else if($output==='FotoAdd') { ?>
+                            <form class="form-horizontal form-label-left" method="POST" enctype="multipart/form-data" action="<?= base_url()?>foto/save_foto">
+                              <div class="form-group">
+                                <label class="control-label col-md-3">Judul Foto</label>
+                                <div class="col-md-7">
+                                  <input type="text" name="judul_foto" class="form-control col-md-7 col-xs-12">
+                                </div>
+                              </div>
+
+                              <div class="form-group">
+                                <label class="control-label col-md-3">Pilih Jalan</label>
+                                <div class="col-md-7">
+                                  <select name="jalan" class="form-control">
+                                    <?php foreach ($gJl as $key) : ?>
+                                      <option value="<?= $key['kode_jalan']; ?>"><?= $key['nama_jalan']; ?></option>
+                                    <?php endforeach ?>
+                                  </select>
+                                </div>
+                              </div>
+
+
+                              <div class="form-group">
+                                <label class="control-label col-md-3">Foto</label>
+                                <div class="col-md-7">
+                                  <input type="file" name="filefoto"  required class="form-control col-md-7 col-xs-12">
+                                </div>
+                              </div>
+
+                              <div class="form-group">
+                                <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
+                                  <button class="btn btn-primary" type="button" onclick="goBack()">Cancel</button>
+                                  <button class="btn btn-primary" type="reset">Reset</button>
+                                  <button type="submit" class="btn btn-success">Submit</button>
+                                </div>
+                              </div>
+                            </form>
+                          <?php }else { echo $output; } ?>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
+              <!-- /page content -->
+
+              <!-- footer content -->
+              <footer>
+                <div class="pull-right">
+                  Gufakto & co - <?php echo date('Y'); ?>
+                </div>
+                <div class="clearfix"></div>
+              </footer>
+              <!-- /footer content -->
             </div>
           </div>
-        </div>
-        <!-- /page content -->
 
-        <!-- footer content -->
-        <footer>
-          <div class="pull-right">
-            Gufakto & co - <?php echo date('Y'); ?>
-          </div>
-          <div class="clearfix"></div>
-        </footer>
-        <!-- /footer content -->
-      </div>
-    </div>
-
-    <!-- compose -->
-    <div class="compose col-md-6 col-xs-12">
-      <div class="compose-header">
-        New Message
-        <button type="button" class="close compose-close">
-          <span>×</span>
-        </button>
-      </div>
-
-      <div class="compose-body">
-        <div id="alerts"></div>
-
-        <div class="btn-toolbar editor" data-role="editor-toolbar" data-target="#editor">
-          <div class="btn-group">
-            <a class="btn dropdown-toggle" data-toggle="dropdown" title="Font"><i class="fa fa-font"></i><b class="caret"></b></a>
-            <ul class="dropdown-menu">
-            </ul>
-          </div>
-
-          <div class="btn-group">
-            <a class="btn dropdown-toggle" data-toggle="dropdown" title="Font Size"><i class="fa fa-text-height"></i>&nbsp;<b class="caret"></b></a>
-            <ul class="dropdown-menu">
-              <li>
-                <a data-edit="fontSize 5">
-                  <p style="font-size:17px">Huge</p>
-                </a>
-              </li>
-              <li>
-                <a data-edit="fontSize 3">
-                  <p style="font-size:14px">Normal</p>
-                </a>
-              </li>
-              <li>
-                <a data-edit="fontSize 1">
-                  <p style="font-size:11px">Small</p>
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          <div class="btn-group">
-            <a class="btn" data-edit="bold" title="Bold (Ctrl/Cmd+B)"><i class="fa fa-bold"></i></a>
-            <a class="btn" data-edit="italic" title="Italic (Ctrl/Cmd+I)"><i class="fa fa-italic"></i></a>
-            <a class="btn" data-edit="strikethrough" title="Strikethrough"><i class="fa fa-strikethrough"></i></a>
-            <a class="btn" data-edit="underline" title="Underline (Ctrl/Cmd+U)"><i class="fa fa-underline"></i></a>
-          </div>
-
-          <div class="btn-group">
-            <a class="btn" data-edit="insertunorderedlist" title="Bullet list"><i class="fa fa-list-ul"></i></a>
-            <a class="btn" data-edit="insertorderedlist" title="Number list"><i class="fa fa-list-ol"></i></a>
-            <a class="btn" data-edit="outdent" title="Reduce indent (Shift+Tab)"><i class="fa fa-dedent"></i></a>
-            <a class="btn" data-edit="indent" title="Indent (Tab)"><i class="fa fa-indent"></i></a>
-          </div>
-
-          <div class="btn-group">
-            <a class="btn" data-edit="justifyleft" title="Align Left (Ctrl/Cmd+L)"><i class="fa fa-align-left"></i></a>
-            <a class="btn" data-edit="justifycenter" title="Center (Ctrl/Cmd+E)"><i class="fa fa-align-center"></i></a>
-            <a class="btn" data-edit="justifyright" title="Align Right (Ctrl/Cmd+R)"><i class="fa fa-align-right"></i></a>
-            <a class="btn" data-edit="justifyfull" title="Justify (Ctrl/Cmd+J)"><i class="fa fa-align-justify"></i></a>
-          </div>
-
-          <div class="btn-group">
-            <a class="btn dropdown-toggle" data-toggle="dropdown" title="Hyperlink"><i class="fa fa-link"></i></a>
-            <div class="dropdown-menu input-append">
-              <input class="span2" placeholder="URL" type="text" data-edit="createLink" />
-              <button class="btn" type="button">Add</button>
+          <!-- compose -->
+          <div class="compose col-md-6 col-xs-12">
+            <div class="compose-header">
+              New Message
+              <button type="button" class="close compose-close">
+                <span>×</span>
+              </button>
             </div>
-            <a class="btn" data-edit="unlink" title="Remove Hyperlink"><i class="fa fa-cut"></i></a>
+
+            <div class="compose-body">
+              <div id="alerts"></div>
+
+              <div class="btn-toolbar editor" data-role="editor-toolbar" data-target="#editor">
+                <div class="btn-group">
+                  <a class="btn dropdown-toggle" data-toggle="dropdown" title="Font"><i class="fa fa-font"></i><b class="caret"></b></a>
+                  <ul class="dropdown-menu">
+                  </ul>
+                </div>
+
+                <div class="btn-group">
+                  <a class="btn dropdown-toggle" data-toggle="dropdown" title="Font Size"><i class="fa fa-text-height"></i>&nbsp;<b class="caret"></b></a>
+                  <ul class="dropdown-menu">
+                    <li>
+                      <a data-edit="fontSize 5">
+                        <p style="font-size:17px">Huge</p>
+                      </a>
+                    </li>
+                    <li>
+                      <a data-edit="fontSize 3">
+                        <p style="font-size:14px">Normal</p>
+                      </a>
+                    </li>
+                    <li>
+                      <a data-edit="fontSize 1">
+                        <p style="font-size:11px">Small</p>
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+
+                <div class="btn-group">
+                  <a class="btn" data-edit="bold" title="Bold (Ctrl/Cmd+B)"><i class="fa fa-bold"></i></a>
+                  <a class="btn" data-edit="italic" title="Italic (Ctrl/Cmd+I)"><i class="fa fa-italic"></i></a>
+                  <a class="btn" data-edit="strikethrough" title="Strikethrough"><i class="fa fa-strikethrough"></i></a>
+                  <a class="btn" data-edit="underline" title="Underline (Ctrl/Cmd+U)"><i class="fa fa-underline"></i></a>
+                </div>
+
+                <div class="btn-group">
+                  <a class="btn" data-edit="insertunorderedlist" title="Bullet list"><i class="fa fa-list-ul"></i></a>
+                  <a class="btn" data-edit="insertorderedlist" title="Number list"><i class="fa fa-list-ol"></i></a>
+                  <a class="btn" data-edit="outdent" title="Reduce indent (Shift+Tab)"><i class="fa fa-dedent"></i></a>
+                  <a class="btn" data-edit="indent" title="Indent (Tab)"><i class="fa fa-indent"></i></a>
+                </div>
+
+                <div class="btn-group">
+                  <a class="btn" data-edit="justifyleft" title="Align Left (Ctrl/Cmd+L)"><i class="fa fa-align-left"></i></a>
+                  <a class="btn" data-edit="justifycenter" title="Center (Ctrl/Cmd+E)"><i class="fa fa-align-center"></i></a>
+                  <a class="btn" data-edit="justifyright" title="Align Right (Ctrl/Cmd+R)"><i class="fa fa-align-right"></i></a>
+                  <a class="btn" data-edit="justifyfull" title="Justify (Ctrl/Cmd+J)"><i class="fa fa-align-justify"></i></a>
+                </div>
+
+                <div class="btn-group">
+                  <a class="btn dropdown-toggle" data-toggle="dropdown" title="Hyperlink"><i class="fa fa-link"></i></a>
+                  <div class="dropdown-menu input-append">
+                    <input class="span2" placeholder="URL" type="text" data-edit="createLink" />
+                    <button class="btn" type="button">Add</button>
+                  </div>
+                  <a class="btn" data-edit="unlink" title="Remove Hyperlink"><i class="fa fa-cut"></i></a>
+                </div>
+
+                <div class="btn-group">
+                  <a class="btn" title="Insert picture (or just drag & drop)" id="pictureBtn"><i class="fa fa-picture-o"></i></a>
+                  <input type="file" data-role="magic-overlay" data-target="#pictureBtn" data-edit="insertImage" />
+                </div>
+
+                <div class="btn-group">
+                  <a class="btn" data-edit="undo" title="Undo (Ctrl/Cmd+Z)"><i class="fa fa-undo"></i></a>
+                  <a class="btn" data-edit="redo" title="Redo (Ctrl/Cmd+Y)"><i class="fa fa-repeat"></i></a>
+                </div>
+              </div>
+
+              <div id="editor" class="editor-wrapper"></div>
+            </div>
+
+            <div class="compose-footer">
+              <button id="send" class="btn btn-sm btn-success" type="button">Send</button>
+            </div>
           </div>
+          <!-- /compose -->
 
-          <div class="btn-group">
-            <a class="btn" title="Insert picture (or just drag & drop)" id="pictureBtn"><i class="fa fa-picture-o"></i></a>
-            <input type="file" data-role="magic-overlay" data-target="#pictureBtn" data-edit="insertImage" />
-          </div>
+          <!-- CRUD -->
+          <?php foreach($js_files as $file): ?>
+            <script src="<?php echo $file; ?>"></script>
+          <?php endforeach; ?>
 
-          <div class="btn-group">
-            <a class="btn" data-edit="undo" title="Undo (Ctrl/Cmd+Z)"><i class="fa fa-undo"></i></a>
-            <a class="btn" data-edit="redo" title="Redo (Ctrl/Cmd+Y)"><i class="fa fa-repeat"></i></a>
-          </div>
-        </div>
-
-        <div id="editor" class="editor-wrapper"></div>
-      </div>
-
-      <div class="compose-footer">
-        <button id="send" class="btn btn-sm btn-success" type="button">Send</button>
-      </div>
-    </div>
-    <!-- /compose -->
-
-    <!-- CRUD -->
-    <?php foreach($js_files as $file): ?>
-      <script src="<?php echo $file; ?>"></script>
-    <?php endforeach; ?>
-
-    <script>
-      function goBack() {
-        window.history.back();
-      }
-    </script>
-  </body>
-  </html>
+          <script>
+            function goBack() {
+              window.history.back();
+            }
+          </script>
+        </body>
+        </html>
